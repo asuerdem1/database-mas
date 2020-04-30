@@ -1,14 +1,11 @@
-import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
-
-import dash_bootstrap_components as dbc
-
-from db_mgt import getAllTables, getColumnNames, getTableDf
-
-from server import app
+from dash.dependencies import Input, Output
 from flask import session
+
+from db_mgt import getTableDf
+from server import app
 
 
 def getLayout():
@@ -131,7 +128,7 @@ def update_graph(xaxis_column_name, yaxis_column_name,
             datas = item['datas']
             year = item['year']
             table_name = item['table_name']
-            dff = getTableDf(datas, year, table_name)
+            dff = getTableDf(datas, year, table_name)[0]
             traces = []
             for i in dff.continent.unique():
                 df_by_continent = dff[dff['continent'] == i]
@@ -203,7 +200,7 @@ def update_y_timeseries(hoverData, xaxis_column_name, axis_type):
         datas = item['datas']
         year = item['year']
         table_name = item['table_name']
-        dfin = getTableDf(datas, year, table_name)
+        dfin = getTableDf(datas, year, table_name)[0]
         dff = dfin.loc[dfin['Country Name'] == country_name]
         dff = dff.loc[dfin['Indicator Name'] == xaxis_column_name]
 
@@ -229,7 +226,7 @@ def update_x_timeseries(hoverData, yaxis_column_name, axis_type):
         datas = item['datas']
         year = item['year']
         table_name = item['table_name']
-        dfinx = getTableDf(datas, year, table_name)
+        dfinx = getTableDf(datas, year, table_name)[0]
         country_name = hoverData['points'][0]['customdata']
         dff = dfinx.loc[dfinx['Country Name'] == country_name]
         dff = dff.loc[dfinx['Indicator Name'] == yaxis_column_name]

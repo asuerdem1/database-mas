@@ -127,7 +127,8 @@ def getLayout():
         ]),
         dbc.Row([
             dbc.Col([
-                dbc.Label(id="error-msg", className="text-danger")
+                dbc.Label(id="error-msg", className="text-danger"),
+                dbc.Label(id="error-msg1", className="text-danger")
             ])
         ]),
         dbc.Row([
@@ -160,7 +161,7 @@ def getLayout():
 
         dbc.Row([
             dbc.Col([
-                dbc.Button("Map", id="scatter-button", color="primary")
+                dbc.Button("Map", id="map-button", color="primary")
             ], className="text-right mt-4")
         ]),
 
@@ -337,20 +338,19 @@ def setYear(n_clicks, year, table):
     return "Year: {}".format(session.get('year') if session.get('year') else "")
 
 
-@app.callback([Output('in_page_url_scatter', 'pathname'), Output('error-msg', 'children')], [Input('scatter-button', 'n_clicks')])
-def go_to_scatter(n_clicks):
-    if n_clicks:
-        if session.get('year') is None or session.get('year') == "":
-            return None, "Year is Not Found!"
+@app.callback(
+    [Output('url', 'pathname'),
+     Output('error-msg', 'children')],
+    [Input('scatter-button', 'n_clicks'),
+     Input('map-button', 'n_clicks')]
+)
+def go_to_graphs_output_page(is_scatter_button_clicked, is_map_button_clicked):
+    print(is_scatter_button_clicked, is_map_button_clicked)
+    if session.get('year') is None or session.get('year') == "":
+        return None, "Year is Not Found!"
+    elif is_scatter_button_clicked:
         return '/output-scatter', None
-    return None, ""
-
-
-@app.callback([Output('in_page_url_map', 'pathname'), Output('error-msg1', 'children')], [Input('map-button', 'n_clicks')])
-def go_to_map(n_clicks):
-    if n_clicks:
-        if session.get('year') is None or session.get('year') == "":
-            return None, "Year is Not Found!"
+    elif is_map_button_clicked:
         return '/output-map', None
     return None, ""
 

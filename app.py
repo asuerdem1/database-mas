@@ -4,7 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 from server import app, server
-from views import in_page, out_page
+from views import in_page, out_page_scatter, out_page_map
 
 from flask import session
 
@@ -46,11 +46,13 @@ app.layout = html.Div(
 def display_page(pathname):
     if pathname == '/':
         return in_page.getLayout()
-    if pathname == '/output':
-        return out_page.getLayout()
+    elif pathname == '/output-scatter':
+        return out_page_scatter.getLayout()
+    elif pathname == '/output-map':
+        return out_page_map.get_layout()
     return 404
 
 
 if __name__ == '__main__':
     # app.run_server(host="0.0.0.0", port=int("8080"), debug=True,dev_tools_ui=True, dev_tools_props_check=True)
-    app.run_server(host="0.0.0.0", port=int("8080"))
+    app.run_server(host="0.0.0.0", use_reloader=True, port=int("8080"))

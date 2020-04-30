@@ -154,7 +154,13 @@ def getLayout():
         ]),
         dbc.Row([
             dbc.Col([
-                dbc.Button("Submit", id="submit_btn", color="primary")
+                dbc.Button("Scatter", id="scatter-button", color="primary")
+            ], className="text-right mt-4")
+        ]),
+
+        dbc.Row([
+            dbc.Col([
+                dbc.Button("Map", id="scatter-button", color="primary")
             ], className="text-right mt-4")
         ]),
 
@@ -331,12 +337,21 @@ def setYear(n_clicks, year, table):
     return "Year: {}".format(session.get('year') if session.get('year') else "")
 
 
-@app.callback([Output('in_page_url', 'pathname'), Output('error-msg', 'children')], [Input('submit_btn', 'n_clicks')])
-def submit(n_clicks):
+@app.callback([Output('in_page_url_scatter', 'pathname'), Output('error-msg', 'children')], [Input('scatter-button', 'n_clicks')])
+def go_to_scatter(n_clicks):
     if n_clicks:
         if session.get('year') is None or session.get('year') == "":
             return None, "Year is Not Found!"
-        return '/output', None
+        return '/output-scatter', None
+    return None, ""
+
+
+@app.callback([Output('in_page_url_map', 'pathname'), Output('error-msg1', 'children')], [Input('map-button', 'n_clicks')])
+def go_to_map(n_clicks):
+    if n_clicks:
+        if session.get('year') is None or session.get('year') == "":
+            return None, "Year is Not Found!"
+        return '/output-map', None
     return None, ""
 
 

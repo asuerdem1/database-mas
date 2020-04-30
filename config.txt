@@ -1,0 +1,4 @@
+
+[database]
+sqlcon = sqlite:///users2.db
+postcon = postgresql+psycopg2://postgres:pw@localhost/eu

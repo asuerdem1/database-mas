@@ -59,13 +59,13 @@ def getLayout():
         dbc.Row([
             dbc.Col([
                 dbc.FormGroup([
-                    dbc.Label("Select country", html_for="table_dropdown"),
+                    dbc.Label("Select country", html_for="country_dropdown"),
                     dcc.Dropdown(id="country_dropdown")
                 ])
             ]),
             dbc.Col([
                 dbc.FormGroup([
-                    dbc.Label("Select continent", html_for="table_dropdown"),
+                    dbc.Label("Select continent", html_for="continent_dropdown"),
                     dcc.Dropdown(id="continent_dropdown")
                 ])
             ]),

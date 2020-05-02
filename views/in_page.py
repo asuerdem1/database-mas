@@ -73,6 +73,21 @@ def getLayout():
 
         dbc.Row([
             dbc.Col([
+                dbc.FormGroup([
+                    dbc.Label("Select gender", html_for="sex_dropdown"),
+                    dcc.Dropdown(id="gender_dropdown")
+                ])
+            ]),
+            dbc.Col([
+                dbc.FormGroup([
+                    dbc.Label("Select age", html_for="age_dropdown"),
+                    dcc.Dropdown(id="age_dropdown")
+                ])
+            ]),
+        ]),
+
+        dbc.Row([
+            dbc.Col([
                 html.Span("Always start with assigning the country variable first, enter min max only for numerical variables!", className="text-secondary")
             ])
         ], className="mb-4"),
@@ -178,7 +193,9 @@ def getLayout():
         Output('continent_dropdown', 'options'),
         Output('country_dropdown', 'value'),
         Output('continent_dropdown', 'value'),
-        Output('show_table_name', 'children')
+        Output('show_table_name', 'children'),
+        Output('gender_dropdown', 'options'),
+        Output('age_dropdown', 'options'),
     ],
     [Input('table_dropdown', 'value')])
 def logout_dashboard(table_name):
@@ -186,7 +203,7 @@ def logout_dashboard(table_name):
         session['table_name'] = table_name
         session['year'] = None
         variables = [{'label': i['name'], 'value': i['name']} for i in getColumnNames(table_name)]
-        return variables, variables, variables, "", "", "Table Name: " + table_name
+        return variables, variables, variables, "", "", "Table Name: " + table_name, variables, variables
     return [], "Table Name: None"
 
 
@@ -252,6 +269,48 @@ def on_continent_selected(continent_variable_name, table_name):
                 data['datas'].append({
                     'nick_name': 'continent',
                     'variable': continent_variable_name
+                })
+                session['all_data'] = all_data
+                break
+
+    return ""
+
+
+@app.callback(
+    Output('gender_dropdown', 'children'),
+    [Input('gender_dropdown', 'value')],
+    [State('table_dropdown', 'value')]
+)
+def on_sex_selected(sex_variable_name, table_name):
+    all_data = session.get('all_data')
+
+    if all_data and len(all_data) > 0:
+        for data in all_data:
+            if data['table_name'] == table_name:
+                data['datas'].append({
+                    'nick_name': 'sex',
+                    'variable': sex_variable_name
+                })
+                session['all_data'] = all_data
+                break
+
+    return ""
+
+
+@app.callback(
+    Output('age_dropdown', 'children'),
+    [Input('age_dropdown', 'value')],
+    [State('table_dropdown', 'value')]
+)
+def on_age_selected(age_variable_name, table_name):
+    all_data = session.get('all_data')
+
+    if all_data and len(all_data) > 0:
+        for data in all_data:
+            if data['table_name'] == table_name:
+                data['datas'].append({
+                    'nick_name': 'age',
+                    'variable': age_variable_name
                 })
                 session['all_data'] = all_data
                 break
@@ -345,7 +404,6 @@ def setYear(n_clicks, year, table):
      Input('map-button', 'n_clicks')]
 )
 def go_to_graphs_output_page(is_scatter_button_clicked, is_map_button_clicked):
-    print(is_scatter_button_clicked, is_map_button_clicked)
     if session.get('year') is None or session.get('year') == "":
         return None, "Year is Not Found!"
     elif is_scatter_button_clicked:

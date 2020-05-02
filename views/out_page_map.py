@@ -13,7 +13,7 @@ import pandas as pd
 
 def get_layout():
     years = session.get('years') if session.get('years') else [0]
-    i_options = np.array(['country', 'sex', 'age', 'rel_area'])
+    i_options = np.array(['country', 'gender', 'age', 'rel_area'])
     v_options = np.array(['animals', 'env', 'faith', 'health', 'resources', 'sort'])
 
     layout = html.Div([
@@ -38,7 +38,7 @@ def get_layout():
                 dcc.Dropdown(
                     id='i-dropdown',
                     options=[{'label': i, 'value': i} for i in i_options],
-                    value='sex'
+                    value='gender'
                 ),
                 dcc.Dropdown(
                     id='i2-dropdown',

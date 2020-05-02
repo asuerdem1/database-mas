@@ -68,10 +68,16 @@ def getTableDf(datas, year, table_name):
         df = df.replace({"country": co, "sex": sx, 'continent': co, 'age': ag})
         dfin2 = df.groupby(['country', 'year']).mean().reset_index()
         dfin2['year'] = dfin2['year'].astype(int)
-
+        dfin3 = dfin2.copy()
+        dfin3['continent'] = dfin3['country'].replace({'SVK': 'East', 'CZE': 'East', 'SVN': 'East', 'ROU': 'East', 'LVA': 'East',
+                                                       'ESP': 'Med', 'FRA': 'West', 'AUT': 'West',
+                                                       'BEL': 'West', 'PRT': 'Med', 'SWE': 'Scan', 'LTU': 'East', 'CHE': 'West', 'ITA': 'Med', 'NLD': 'West',
+                                                       'DNK': 'Scan', 'BGR': 'East', 'HUN': 'East', 'IRL': 'West', 'GBR': 'West', 'FIN': 'Scan', 'TUR': 'Med',
+                                                       'NOR': 'Scan', 'DEU': 'West', 'EST': 'East', 'GRC': 'Med', 'HRV': 'East', 'POL': 'East', 'DE-E': 'East',
+                                                       'LUX': 'West', 'CYP': 'Med', 'ISL': 'Scan', 'MLT': 'Med', 'GB-NIR': 'West'})
         connection.close()
 
-        return dfin, dfin2, df
+        return dfin, dfin2, df, dfin3
     except Exception as e:
         print(e)
         connection.close()

@@ -16,6 +16,14 @@ v_options = np.array(['animals', 'env', 'faith', 'health', 'resources', 'sort'])
 
 def getLayout():
     years = session.get('years') if session.get('years') else [0]
+    all_data = session.get('all_data')
+    item = all_data[0]
+    datas = item['datas']
+    year = item['year']
+    table_name = item['table_name']
+    dff = getTableDf(datas, year, table_name)[3]
+    dropdown_options = [{'label': i, 'value': i} for i in dff.columns.to_numpy()]
+
     layout = html.Div([
         dcc.Location(id='out_page_url', refresh=True),
         html.Div([
@@ -24,18 +32,25 @@ def getLayout():
                 html.Div([
                     dcc.Dropdown(
                         id='x-dropdown',
-                        options=[{'label': i, 'value': i} for i in v_options],
-                        value='health'
+                        options=dropdown_options
                     ),
                 ], style={'width': '49%', 'display': 'inline-block'}),
 
                 html.Div([
                     dcc.Dropdown(
                         id='y-dropdown',
-                        options=[{'label': i, 'value': i} for i in v_options],
-                        value='resources'
+                        options=dropdown_options
                     ),
-                ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'})
+                ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'}),
+
+                html.Div([
+                    dcc.Dropdown(
+                        id='t-dropdown',
+                        options=dropdown_options,
+                        multi=True
+                    ),
+                ], style={'width': '49%', 'display': 'inline-block'}),
+
             ], style={
                 'borderBottom': 'thin lightgrey solid',
                 'backgroundColor': 'rgb(250, 250, 250)',
@@ -182,9 +197,10 @@ def update_y_timeseries(clickData, v1):
 
 @app.callback(
     Output('cor-plot', 'figure'),
-    [Input('year--slider', 'value')]
+    [Input('year--slider', 'value'),
+     Input('t-dropdown', 'value')]
 )
-def update_graph(year_value):
+def update_graph(year_value, value):
     all_data = session.get('all_data')
     for item in all_data:
         if item['year'] == year_value:
@@ -193,5 +209,5 @@ def update_graph(year_value):
             table_name = item['table_name']
             dff = getTableDf(datas, year, table_name)[3]
             dff.set_index('country', inplace=True)
-            fig = ff.create_scatterplotmatrix(dff[['health', 'resources']], diag='histogram', text=dff.index, height=800, width=800)
+            fig = ff.create_scatterplotmatrix(dff[value], diag='histogram', text=dff.index, height=800, width=800)
             return fig

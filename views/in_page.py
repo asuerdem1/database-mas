@@ -74,8 +74,8 @@ def getLayout():
         dbc.Row([
             dbc.Col([
                 dbc.FormGroup([
-                    dbc.Label("Select gender", html_for="sex_dropdown"),
-                    dcc.Dropdown(id="gender_dropdown")
+                    dbc.Label("Select sex", html_for="sex_dropdown"),
+                    dcc.Dropdown(id="sex_dropdown")
                 ])
             ]),
             dbc.Col([
@@ -194,7 +194,7 @@ def getLayout():
         Output('country_dropdown', 'value'),
         Output('continent_dropdown', 'value'),
         Output('show_table_name', 'children'),
-        Output('gender_dropdown', 'options'),
+        Output('sex_dropdown', 'options'),
         Output('age_dropdown', 'options'),
     ],
     [Input('table_dropdown', 'value')])
@@ -277,8 +277,8 @@ def on_continent_selected(continent_variable_name, table_name):
 
 
 @app.callback(
-    Output('gender_dropdown', 'children'),
-    [Input('gender_dropdown', 'value')],
+    Output('sex_dropdown', 'children'),
+    [Input('sex_dropdown', 'value')],
     [State('table_dropdown', 'value')]
 )
 def on_sex_selected(sex_variable_name, table_name):

@@ -13,8 +13,15 @@ import pandas as pd
 
 def get_layout():
     years = session.get('years') if session.get('years') else [0]
-    i_options = np.array(['country', 'gender', 'age', 'rel_area'])
-    v_options = np.array(['animals', 'env', 'faith', 'health', 'resources', 'sort'])
+    all_data = session.get('all_data')
+    item = all_data[0]
+    datas = item['datas']
+    year = item['year']
+    table_name = item['table_name']
+    dff = getTableDf(datas, year, table_name)[3]
+    options = dff.columns.to_numpy()
+    i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
+    v_options = np.array(list(set(options) - set(i_options)))
 
     layout = html.Div([
         html.Div([
@@ -23,22 +30,21 @@ def get_layout():
                 dcc.Dropdown(
                     id='v-dropdown',
                     options=[{'label': i, 'value': i} for i in v_options],
-                    value='health'
+                    value=v_options[0]
                 ),
                 dcc.Dropdown(
                     id='v2-dropdown',
                     options=[{'label': i, 'value': i} for i in v_options],
-                    value='resources'
+                    value=v_options[1]
                 ),
-            ],
-                style={'width': '49%', 'display': 'inline-block'}),
+            ], style={'width': '49%', 'display': 'inline-block'}),
 
             html.Div([
                 html.Label('Categorical Indicators'),
                 dcc.Dropdown(
                     id='i-dropdown',
                     options=[{'label': i, 'value': i} for i in i_options],
-                    value='gender'
+                    value='sex'
                 ),
                 dcc.Dropdown(
                     id='i2-dropdown',

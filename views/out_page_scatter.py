@@ -11,8 +11,6 @@ import plotly.express as px
 import numpy as np
 import plotly.figure_factory as ff
 
-v_options = np.array(['animals', 'env', 'faith', 'health', 'resources', 'sort'])
-
 
 def getLayout():
     years = session.get('years') if session.get('years') else [0]
@@ -22,7 +20,9 @@ def getLayout():
     year = item['year']
     table_name = item['table_name']
     dff = getTableDf(datas, year, table_name)[3]
-    dropdown_options = [{'label': i, 'value': i} for i in dff.columns.to_numpy()]
+    options = dff.columns.to_numpy()
+    i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
+    v_options = np.array(list(set(options) - set(i_options)))
 
     layout = html.Div([
         dcc.Location(id='out_page_url', refresh=True),
@@ -32,22 +32,25 @@ def getLayout():
                 html.Div([
                     dcc.Dropdown(
                         id='x-dropdown',
-                        options=dropdown_options
+                        options=[{'label': i, 'value': i} for i in v_options],
+                        value=v_options[0]
                     ),
                 ], style={'width': '49%', 'display': 'inline-block'}),
 
                 html.Div([
                     dcc.Dropdown(
                         id='y-dropdown',
-                        options=dropdown_options
+                        options=[{'label': i, 'value': i} for i in v_options],
+                        value=v_options[1]
                     ),
                 ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'}),
 
                 html.Div([
                     dcc.Dropdown(
                         id='t-dropdown',
-                        options=dropdown_options,
-                        multi=True
+                        options=[{'label': i, 'value': i} for i in v_options],
+                        multi=True,
+                        value=v_options.tolist(),
                     ),
                 ], style={'width': '49%', 'display': 'inline-block'}),
 

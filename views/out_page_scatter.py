@@ -14,15 +14,6 @@ import plotly.figure_factory as ff
 
 def getLayout():
     years = session.get('years') if session.get('years') else [0]
-    all_data = session.get('all_data')
-    item = all_data[0]
-    datas = item['datas']
-    year = item['year']
-    table_name = item['table_name']
-    dff = getTableDf(datas, year, table_name)[3]
-    options = dff.columns.to_numpy()
-    i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
-    v_options = np.array(list(set(options) - set(i_options)))
 
     layout = html.Div([
         dcc.Location(id='out_page_url', refresh=True),
@@ -30,27 +21,18 @@ def getLayout():
             html.Div([
 
                 html.Div([
-                    dcc.Dropdown(
-                        id='x-dropdown',
-                        options=[{'label': i, 'value': i} for i in v_options],
-                        value=v_options[0]
-                    ),
+                    dcc.Dropdown(id='x-dropdown'),
                 ], style={'width': '49%', 'display': 'inline-block'}),
 
                 html.Div([
-                    dcc.Dropdown(
-                        id='y-dropdown',
-                        options=[{'label': i, 'value': i} for i in v_options],
-                        value=v_options[1]
-                    ),
+                    dcc.Dropdown(id='y-dropdown'),
                 ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'}),
 
                 html.Div([
                     dcc.Dropdown(
                         id='t-dropdown',
-                        options=[{'label': i, 'value': i} for i in v_options],
                         multi=True,
-                        value=v_options.tolist(),
+                        # value=v_options.tolist(),
                     ),
                 ], style={'width': '49%', 'display': 'inline-block'}),
 
@@ -98,6 +80,27 @@ def getOptions(year=0):
             datas = item['datas']
 
     return [item['nick_name'] for item in datas if item['nick_name'] not in ['country']]
+
+
+@app.callback(
+    [Output('x-dropdown', 'options'),
+     Output('y-dropdown', 'options'),
+     Output('t-dropdown', 'options')],
+    [Input('year--slider', 'value')]
+)
+def get_dropdown_options(year):
+    all_data = session.get('all_data')
+    for item in all_data:
+        if item['year'] == year:
+            datas = item['datas']
+            year = item['year']
+            table_name = item['table_name']
+            dff = getTableDf(datas, year, table_name)[3]
+            options = dff.columns.to_numpy()
+            i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
+            v_options = np.array(list(set(options) - set(i_options)))
+            dropdown_options = [{'label': i, 'value': i} for i in v_options]
+            return dropdown_options, dropdown_options, dropdown_options
 
 
 @app.callback(Output('out_page_url', 'pathname'), [Input('go_back', 'n_clicks')])

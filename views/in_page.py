@@ -182,7 +182,6 @@ def getLayout():
 
         html.Div(id='invisible', style={'visibility': 'hidden'})
     ])
-
     return layout
 
 
@@ -242,15 +241,16 @@ def addData(n_clicks, table, variable, nick_name, min_v, max_v):
 def on_country_selected(country_variable_name, table_name):
     all_data = session.get('all_data')
 
-    if all_data and len(all_data) > 0:
-        for data in all_data:
-            if data['table_name'] == table_name:
-                data['datas'].append({
-                    'nick_name': 'country',
-                    'variable': country_variable_name
-                })
-                session['all_data'] = all_data
-                break
+    if country_variable_name:
+        if all_data and len(all_data) > 0:
+            for data in all_data:
+                if data['table_name'] == table_name:
+                    data['datas'].append({
+                        'nick_name': 'country',
+                        'variable': country_variable_name
+                    })
+                    session['all_data'] = all_data
+                    break
 
     return ""
 
@@ -263,15 +263,16 @@ def on_country_selected(country_variable_name, table_name):
 def on_continent_selected(continent_variable_name, table_name):
     all_data = session.get('all_data')
 
-    if all_data and len(all_data) > 0:
-        for data in all_data:
-            if data['table_name'] == table_name:
-                data['datas'].append({
-                    'nick_name': 'continent',
-                    'variable': continent_variable_name
-                })
-                session['all_data'] = all_data
-                break
+    if continent_variable_name:
+        if all_data and len(all_data) > 0:
+            for data in all_data:
+                if data['table_name'] == table_name:
+                    data['datas'].append({
+                        'nick_name': 'continent',
+                        'variable': continent_variable_name
+                    })
+                    session['all_data'] = all_data
+                    break
 
     return ""
 
@@ -284,15 +285,16 @@ def on_continent_selected(continent_variable_name, table_name):
 def on_sex_selected(sex_variable_name, table_name):
     all_data = session.get('all_data')
 
-    if all_data and len(all_data) > 0:
-        for data in all_data:
-            if data['table_name'] == table_name:
-                data['datas'].append({
-                    'nick_name': 'sex',
-                    'variable': sex_variable_name
-                })
-                session['all_data'] = all_data
-                break
+    if sex_variable_name:
+        if all_data and len(all_data) > 0:
+            for data in all_data:
+                if data['table_name'] == table_name:
+                    data['datas'].append({
+                        'nick_name': 'sex',
+                        'variable': sex_variable_name
+                    })
+                    session['all_data'] = all_data
+                    break
 
     return ""
 
@@ -318,6 +320,25 @@ def on_age_selected(age_variable_name, table_name):
     return ""
 
 
+@app.callback(
+    Output('remove_button', 'children'),
+    [Input('remove_button', 'n_clicks'),
+     Input('remove_button', 'key'),
+     Input('remove_button', 'className')]
+)
+def on_remove_button_clicked(n_clicks, row_data, year):
+    if n_clicks:
+        all_data = session.get('all_data') if session.get('all_data') else []
+        for index_all_data in range(len(all_data)):
+            if all_data[index_all_data]['year'] == year:
+                for index in range(len(all_data[index_all_data]['datas'])):
+                    if all_data[index_all_data]['datas'][index]['nick_name'] == row_data['nick_name']:
+                        del all_data[index_all_data]['datas'][index]
+                        session['all_data'] = all_data
+                        return "Please click f5 to refresh"
+    return "X"
+
+
 def drawShowData():
     def getYear(year, table):
         year_data = dbc.Row([
@@ -327,26 +348,27 @@ def drawShowData():
         ])
         return year_data
 
-    def getRow(data):
+    def getRow(row_data, year_d):
         row = dbc.Row([
             dbc.Col([
                 dbc.Row([
                     dbc.Col([
-                        dbc.Label(data['variable'])
+                        dbc.Label(row_data['variable'])
                     ]),
                     dbc.Col([
                         dbc.Label('=')
                     ]),
                     dbc.Col([
-                        dbc.Label(data['nick_name'])
+                        dbc.Label(row_data['nick_name'])
                     ])
                 ])], width=6),
             dbc.Col([
-                dbc.Label('Min Value: ' + (data.get('min') or ''))
+                dbc.Label('Min Value: ' + (row_data.get('min') or ''))
             ]),
             dbc.Col([
-                dbc.Label('Max Value: ' + (data.get('max') or ''))
-            ])
+                dbc.Label('Max Value: ' + (row_data.get('max') or ''))
+            ]),
+            dbc.Button(children=[dbc.Label('X')], key=row_data, className=year_d, id='remove_button'),
         ])
         return row
 
@@ -355,10 +377,11 @@ def drawShowData():
     table_data = []
     for data in all_data:
         y_data = getYear(data['year'], data['table_name'])
+        data_year = data['year']
         if y_data:
             table_data.append(y_data)
         for item in data['datas']:
-            table_data.append(getRow(item))
+            table_data.append(getRow(item, data_year))
 
     return table_data if table_data != [] else ""
 

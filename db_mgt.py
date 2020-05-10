@@ -51,7 +51,7 @@ def getTableDf(datas, year, table_name):
                 df.where((df[item['nick_name']] <= int(item['max'])), inplace=True)
 
         dfm = pd.melt(df, id_vars=['country', 'year', 'continent'], value_vars=[item['nick_name'] for item in datas if item['nick_name'] not in ['country', 'year', 'continent']])
-        dfin = dfm.groupby(['country', 'year', 'variable', 'continent']).mean().reset_index()
+        dfin = dfm.copy()
         dfin['year'] = dfin['year'].astype(int)
         dfin.rename(columns={'variable': 'Indicator Name', 'value': 'Value', 'year': 'Year', 'country': 'Country Name'}, inplace=True)
 

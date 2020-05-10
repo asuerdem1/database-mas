@@ -13,30 +13,14 @@ import pandas as pd
 
 def get_layout():
     years = session.get('years') if session.get('years') else [0]
-    all_data = session.get('all_data')
-    item = all_data[0]
-    datas = item['datas']
-    year = item['year']
-    table_name = item['table_name']
-    dff = getTableDf(datas, year, table_name)[3]
-    options = dff.columns.to_numpy()
     i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
-    v_options = np.array(list(set(options) - set(i_options)))
 
     layout = html.Div([
         html.Div([
             html.Div([
                 html.Label('Measurement Indicators'),
-                dcc.Dropdown(
-                    id='v-dropdown',
-                    options=[{'label': i, 'value': i} for i in v_options],
-                    value=v_options[0]
-                ),
-                dcc.Dropdown(
-                    id='v2-dropdown',
-                    options=[{'label': i, 'value': i} for i in v_options],
-                    value=v_options[1]
-                ),
+                dcc.Dropdown(id='v-dropdown',),
+                dcc.Dropdown(id='v2-dropdown',),
             ], style={'width': '49%', 'display': 'inline-block'}),
 
             html.Div([
@@ -89,9 +73,29 @@ def get_layout():
 
 
 @app.callback(
+    [Output('v-dropdown', 'options'),
+     Output('v2-dropdown', 'options')],
+    [Input('year--slider', 'value')]
+)
+def get_dropdown_options(year):
+    all_data = session.get('all_data')
+    for item in all_data:
+        if item['year'] == year:
+            datas = item['datas']
+            year = item['year']
+            table_name = item['table_name']
+            dff = getTableDf(datas, year, table_name)[3]
+            options = dff.columns.to_numpy()
+            i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
+            v_options = np.array(list(set(options) - set(i_options)))
+            dropdown_options = [{'label': i, 'value': i} for i in v_options]
+            return dropdown_options, dropdown_options
+
+
+@app.callback(
     Output('crossfilter-map', 'figure'),
     [Input('v-dropdown', 'value'), Input('year--slider', 'value')])
-def update_map_graph(var, year_value=2010):
+def update_map_graph(var, year_value):
     all_data = session.get('all_data')
 
     for item in all_data:
@@ -151,7 +155,7 @@ def update_vio(clickData, ind, ind2, var, year_value):
             year = item['year']
             table_name = item['table_name']
             dff = getTableDf(datas, year, table_name)[2]
-            dff = dff[dff['country'] == country_name].dropna()
+            dff = dff[dff['country'] == country_name]
             fig = px.violin(dff, x=dff[ind], y=dff[var], color=dff[ind2], box=True, violinmode='overlay', hover_data=dff.columns)
             xx = dff.groupby(ind).agg(['mean', 'median', 'std', 'skew', pd.Series.kurt])[var]
             li = xx.columns.tolist()

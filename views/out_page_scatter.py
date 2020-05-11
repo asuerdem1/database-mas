@@ -17,6 +17,9 @@ def getLayout():
 
     layout = html.Div([
         dcc.Location(id='out_page_url', refresh=True),
+
+        html.A("GO BACK", href='/'),
+
         html.Div([
             html.Div([
 

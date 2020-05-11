@@ -16,11 +16,13 @@ def get_layout():
     i_options = np.array(['country', 'sex', 'age', 'continent', 'year'])
 
     layout = html.Div([
+        html.A("GO BACK", href='/'),
+
         html.Div([
             html.Div([
                 html.Label('Measurement Indicators'),
-                dcc.Dropdown(id='v-dropdown',),
-                dcc.Dropdown(id='v2-dropdown',),
+                dcc.Dropdown(id='v-dropdown', ),
+                dcc.Dropdown(id='v2-dropdown', ),
             ], style={'width': '49%', 'display': 'inline-block'}),
 
             html.Div([
